@@ -9,6 +9,10 @@ const availableOptions = [
     'FletchingTimer',
     'AutoBonfire',
     'AutoLooter',
+    'AutoSlayerTask',
+    'LootInfo',
+    'StackableLoot',
+    'SellableLoot',
 ]
 
 const debug = false

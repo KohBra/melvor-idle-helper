@@ -5,7 +5,7 @@ setTimeout(() => {
 })
 
 let options = {}
-const debug = true
+const debug = false
 const debugLog = (...logs) => debug && console.log(...logs)
 
 function makePageScript () {
