@@ -27,7 +27,7 @@ function watchForOptionsChanges () {
             options[message.option] = message.value
             sendOptions()
         }
-        debugLog('got message', message, sender)
+        debugLog('received message from bg', message, sender)
         respond('ok')
     })
 }
@@ -36,12 +36,12 @@ function sendOptions () {
     // Send message until its confirmed received
     let id = null;
     window.addEventListener("message", event => {
-        debugLog('got message', event)
+        debugLog('received message from page', event)
         clearInterval(id)
     })
 
     id = setInterval(() => {
         window.postMessage({type: 'runHelpers', options: options}, "*")
-        debugLog('options send', options)
+        debugLog('options sent to page', options)
     }, 500)
 }

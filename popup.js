@@ -23,7 +23,7 @@ function registerOptionListeners () {
 	Object.keys(options).forEach(option => {
 		document.getElementById(option).addEventListener('change', function () {
             let checked = this.checked
-            debugLog('option changed', option, checked, options[option])
+            debugLog('option changed in popup', option, checked, options[option])
             if (options[option] !== checked) {
                 sendMessage(
                     {type: 'changeOption', option: option, value: checked},
@@ -37,6 +37,6 @@ function registerOptionListeners () {
 function sendMessage (message, callback) {
     chrome.runtime.sendMessage(message, response => {
         callback()
-        debugLog('message sent', message, response)
+        debugLog('message sent to bg', message, response)
     })
 }

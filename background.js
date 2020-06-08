@@ -8,6 +8,7 @@ const availableOptions = [
     'SmithingTimer',
     'FletchingTimer',
     'AutoBonfire',
+    'AutoLooter',
 ]
 
 const debug = false
@@ -51,7 +52,7 @@ function listenForChanges () {
             changeOption(message.option, message.value)
             sendChanges({option: message.option, value: message.value})
         }
-        debugLog('got message', message, sender)
+        debugLog('received message', message, sender)
         respond('ok')
     })
 }

@@ -59,7 +59,7 @@ class Helper
 
 class SmithingTimer extends Helper
 {
-    #rowHtml = `<div class="col-12" id="koh-smithing-time-row"><div class="font-size-sm font-w600 text-uppercase text-center text-muted border-top border-smithing"><small class="mr-2">Will Take:</small><span id="koh-time-remaining"></span></div></div>`
+    #rowHtml = `<div class="col-12" id="koh-smithing-time-row"><div class="font-size-sm font-w600 text-uppercase text-center text-muted border-top border-smithing"><small class="mr-2">Will Take:</small><span id="koh-smithing-time-remaining"></span></div></div>`
     #timeId = '#koh-smithing-time-remaining'
     #updateInterval = 200
     #intervalId = null
@@ -75,10 +75,39 @@ class SmithingTimer extends Helper
     }
 
     updateTime () {
-        let have = $('#smithing-item-have-0').text().trim().replace(',', '')
-        let req = $('#smith-item-reqs').text().trim()
-        let smithTime = 2
-        this.getTimeElement().text((have / req * smithTime / 60).toFixed(2) + 'm')
+        let reqs = $('#smith-item-reqs').text().trim().split(' ')
+
+        let minTime = reqs.map((req, i) => {
+            let have = $(`#smithing-item-have-${i}`).text().trim().replace(',', '')
+            return {req: req, have: have, processes: have / req}
+        }).reduce((min, info) => {
+            if (min > info.processes) {
+                min = info.processes
+            }
+            return min
+        }, Infinity) * (smithInterval / 1000)
+
+        let time = `${(minTime / 60).toFixed(2)}m`
+
+        let chance = this.getKeepChance()
+        if (chance) {
+            let avgPotentialExtra = minTime * (chance / 100)
+            time += ` + ${(avgPotentialExtra / 60).toFixed(2)}m`
+        }
+
+        this.getTimeElement().text(time)
+    }
+
+    getKeepChance () {
+        // Yikes
+        if (smithingMastery !== undefined &&
+            smithingItems !== undefined &&
+            selectedSmith !== undefined &&
+            smithingItems[selectedSmith] !== undefined &&
+            smithingMastery[smithingItems[selectedSmith].smithingID] !== undefined
+        ) {
+            return Math.floor(smithingMastery[smithingItems[selectedSmith].smithingID].mastery / 20) * 10
+        }
     }
 
     getTimeElement () {
@@ -88,7 +117,7 @@ class SmithingTimer extends Helper
             return el
         }
 
-        $('#smithing-item-have-0')
+        $('#smith-item-reqs')
             .closest('.row')
             .append(this.#rowHtml)
 
@@ -175,8 +204,32 @@ class AutoBonfire extends Helper
     }
 }
 
+class AutoLooter extends Helper{
+    #checkInterval = 200
+    #intervalId = null
+
+    start () {
+        this.#intervalId = setInterval(() => this.collectLoot(), this.#checkInterval)
+    }
+
+    stop () {
+        clearInterval(this.#intervalId)
+    }
+
+    collectLoot () {
+        if (this.getCurrentLootCount() > 0) {
+            window.lootAll()
+        }
+    }
+
+    getCurrentLootCount () {
+        return parseInt($('#combat-loot-text').text().substring(17).split('/').map(s => s.trim())[0])
+    }
+}
+
 helpers = {
     SmithingTimer,
     FletchingTimer,
     AutoBonfire,
+    AutoLooter,
 }
