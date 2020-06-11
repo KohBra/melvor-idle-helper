@@ -2,6 +2,10 @@
 
 A small collection of minor tools to help play Melvor Idle
 
-* Auto Bonfire
-* Auto Looter
-* Show time to finish craft for Smithing or Fletching
+* AutoBonfire
+* AutoLooter
+* AutoSlayerTask
+* AutoMiner
+* LootInfo
+* SellableLoot
+* StackableLoot

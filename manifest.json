@@ -1,32 +1,19 @@
 {
   "manifest_version": 2,
-  "name": "MelvorIdle Helper",
-  "description": "This extension provides some simple tools for MelvorIdle",
+  "name": "Melvor Idle Helper",
+  "description": "This extension provides some simple tools and helpers for Melvor Idle",
   "version": "1.0",
-  "browser_action": {
-    "default_popup": "popup.html"
-  },
-  "permissions": [
-    "activeTab",
-    "storage"
-  ],
   "content_scripts": [
     {
       "matches": [
         "https://melvoridle.com/*"
       ],
       "js": [
-        "jquery.min.js",
-        "content.js"
+        "js/scriptInjector.js"
       ]
     }
   ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ]
-  },
   "web_accessible_resources": [
-    "page.js"
+    "js/*"
   ]
 }
