@@ -1,8 +1,8 @@
 import { debugLog } from './helpers.js'
-import { storageKey, configKeys, exportedGameVars } from './const.js'
+import { storageKey, configKeys } from './const.js'
 import * as toolDefinitions from './tools/index.js'
 
-window.helper = (() => {
+window.toolset = (() => {
     let config = {}
     let tools = {}
 

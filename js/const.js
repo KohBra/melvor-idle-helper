@@ -10,12 +10,6 @@ export const configKeys = {
     enabledTools: 'enabledTools',
 }
 
-// Misc
-export const exportedGameVars = [
-    'lightBonfire',
-    'bonfireBonus',
-]
-
 // Skills
 export const miningRocks = {
     runeEssence: 10,
@@ -29,4 +23,15 @@ export const miningRocks = {
     adamant: 7,
     runite: 8,
     dragonite: 9,
+}
+
+export const farmingAreas = {
+    allotment: 0,
+    herb: 1,
+    tree: 2,
+}
+export const farmingSeedRequirements = {
+    [farmingAreas.allotment]: 3,
+    [farmingAreas.herb]: 2,
+    [farmingAreas.tree]: 1,
 }

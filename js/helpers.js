@@ -12,9 +12,9 @@ const combatSkills = [
 ]
 
 export const debugLog = (...logs) => debug && console.log(...logs)
-
 export const isBankFull = () => window.bank.length === window.bankMax + 11
-export const bankHasItem = () => window.bank.filter(item => item.id === itemId).length > 0
+export const getBankItem = itemId => window.bank.find(item => item.id === itemId)
+export const bankHasItem = itemId => getBankItem(itemId) !== undefined
 export const sellItem = (itemId, qty) => {
     // For some reason items isn't on global window but can be accessed globally... ???
     let sellTotal = items[itemId].sellsFor * qty

@@ -1,4 +1,9 @@
 // meh
+// Need
+// - Time to finish all
+// - Xp after all finished
+// - total crafted after all finished
+//
 //     class SmithingTimer extends IntervalHelper {
 //         #rowHtml = `<div class="col-12" id="koh-smithing-time-row"><div class="font-size-sm font-w600 text-uppercase text-center text-muted border-top border-smithing"><small class="mr-2">Will Take:</small><span id="koh-smithing-time-remaining"></span></div></div>`
 //         #timeId = '#koh-smithing-time-remaining'
