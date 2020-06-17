@@ -1,10 +1,27 @@
 export default class Tool
 {
+    started = false
+    constructor (config = {}) {
+        this.config = config
+    }
+
     start () {
-        throw new Error('Implement start()')
+        this.started = true
     }
 
     stop () {
-        throw new Error('Implement stop()')
+        this.started = false
+    }
+
+    getDescription () {
+        return this.constructor.name
+    }
+
+    buildConfigHtml () {
+        return ''
+    }
+
+    getName () {
+        return this.constructor.name
     }
 }

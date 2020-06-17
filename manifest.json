@@ -9,11 +9,12 @@
         "https://melvoridle.com/*"
       ],
       "js": [
-        "js/scriptInjector.js"
+        "js/injector.js"
       ]
     }
   ],
   "web_accessible_resources": [
-    "js/*"
+    "js/*",
+    "css/*"
   ]
 }

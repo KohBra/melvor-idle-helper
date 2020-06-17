@@ -20,3 +20,4 @@ Planned
 * AutoSell
 * AutoBury
 * AutoEat/DeathProtection
+* Xp/hour

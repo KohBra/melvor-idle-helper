@@ -7,6 +7,7 @@ export default class IntervalTool extends Tool
     _loopFunc = 'loop'
 
     start () {
+        super.start()
         // If we need to wait more than 10 seconds to run the first loop, just run it now.
         if (this._interval > 10000) {
             this[this._loopFunc]()
@@ -16,6 +17,7 @@ export default class IntervalTool extends Tool
     }
 
     stop () {
+        super.stop()
         clearInterval(this._intervalId)
     }
 
