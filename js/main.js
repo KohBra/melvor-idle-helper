@@ -1,6 +1,8 @@
 import { debugLog } from './helpers.js'
 import { storageKey, configKeys } from './const.js'
 import * as toolDefinitions from './tools/index.js'
+import configurationPage from './config.js'
+import config from './config.js'
 
 window.toolset = (() => {
     let config = {}
@@ -9,10 +11,10 @@ window.toolset = (() => {
     const run = () => {
         loadConfig()
         startTools()
-        console.log('Melvor Idle Helper loaded')
+        console.log('Melvor Idle Tools loaded')
     }
 
-    const getConfig = () => config
+    const getConfig = (key = null) => key ? config[key] ?? {} : config
     const freshConfig = () => {
         return {
             enabledTools: []
@@ -32,7 +34,22 @@ window.toolset = (() => {
         }
     }
     const setConfig = (key, value) => {
-        config[key] = value
+        if (key.indexOf('.')) {
+            let keys = key.split('.')
+            let c = config
+            keys.forEach(k => {
+                if (k === keys[keys.length - 1]) {
+                    return c[k] = value
+                }
+
+                if (c[k] === undefined) {
+                    c[k] = {}
+                }
+                c = c[k]
+            })
+        } else {
+            config[key] = value
+        }
         saveConfig()
     }
     const saveConfig = () => {
@@ -45,13 +62,22 @@ window.toolset = (() => {
     const startTool = toolName => {
         let tool = getTool(toolName)
         tools[toolName] = tool
-        tool.start()
+        if (!tool.started) {
+            tool.start()
+        }
     }
     const stopTool = toolName => {
         let tool = getTool(toolName)
-        tool.stop()
+        if (tool.started) {
+            tool.stop()
+        }
     }
-    const getTool = toolName => tools[toolName] ?? new toolDefinitions[toolName]
+    const restartTool = toolName => {
+        let tool = getTool(toolName)
+        tool.stop()
+        tool.start()
+    }
+    const getTool = toolName => tools[toolName] ?? new toolDefinitions[toolName](getConfig(toolName))
 
     return {
         run,
@@ -67,7 +93,10 @@ window.toolset = (() => {
         startTools,
         startTool,
         stopTool,
+        restartTool,
         getTool,
+
+        configuration: configurationPage,
     }
 })()
 
@@ -75,6 +104,7 @@ window.toolset = (() => {
 let loadedInterval = setInterval(() => {
     if (window.isLoaded) {
         clearInterval(loadedInterval)
-        helper.run()
+        toolset.run()
+        configurationPage.build(toolset)
     }
 }, 50)

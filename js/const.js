@@ -9,6 +9,7 @@ export const storageKey = 'helperConfig'
 export const configKeys = {
     enabledTools: 'enabledTools',
 }
+export const configPageId = 'tool-config-container'
 
 // Skills
 export const miningRocks = {
@@ -34,4 +35,9 @@ export const farmingSeedRequirements = {
     [farmingAreas.allotment]: 3,
     [farmingAreas.herb]: 2,
     [farmingAreas.tree]: 1,
+}
+export const farmingAreaSeedKeys = {
+    [farmingAreas.allotment]: 'allotmentSeeds',
+    [farmingAreas.herb]: 'herbSeeds',
+    [farmingAreas.tree]: 'treeSeeds',
 }

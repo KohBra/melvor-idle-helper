@@ -1,46 +1,243 @@
 import SkillInterval from './SkillInterval.js'
+import {
+    configItemDescription,
+    configItemForm, select2, genericInfoContainer,
+    infoContainer,
+    toolConfigInputName
+} from '../htmlBuilder.js'
+import { formatNumber, getMiningInterval, skillcapeEquipped } from '../helpers.js'
 import { miningRocks } from '../const.js'
 
 export default class AutoMiner extends SkillInterval
 {
+    COAL = 3
     _skill = CONSTANTS.skill.Mining
     _currentRock = null
-    _backupRock = miningRocks.coal
-    _miningBackup = false
-    // todo: make a queue of backups rather than just coal
 
     start () {
+        if (!this.started) {
+            this.createInfoElement()
+        }
         super.start()
-        this.setCurrentRock()
+    }
+
+    stop () {
+        super.stop()
+        this.removeInfoElement()
     }
 
     loop () {
-        if (!this._currentRock && window.currentRock) {
-            this.setCurrentRock()
-        } else if (!window.currentRock) {
-            return
+        if (window.currentRock != this._currentRock) {
+            this._currentRock = window.currentRock
         }
 
-        if (this.isCurrentRockDepleted() && !this._miningBackup) {
-            this._miningBackup = true
-            window.mineRock(this._backupRock, true)
-            setTimeout(() => {
-                this._miningBackup = false
-                window.mineRock(this._currentRock, true)
-                window.rockReset(this._backupRock) // make the backup force reset even if its not dead
-            }, this.currentRockRespawnTimer() + this._interval)
+        for (let i of [0, 1, 2]) {
+            let rockId = parseInt(this.config[`ore${i}`])
+            if (rockId < 0 || this.isRockDepleted(rockId)) {
+                continue
+            }
+
+            if (this._currentRock == rockId) {
+                // already mining it
+                break
+            }
+
+            this.startMining(rockId)
+            break
         }
     }
 
-    setCurrentRock () {
-        this._currentRock = window.currentRock
+    isRockDepleted (rockId) {
+        return window.rockData[rockId].depleted
     }
 
-    isCurrentRockDepleted () {
-        return window.rockData[this._currentRock].depleted
+    startMining (rockId) {
+        this._currentRock = rockId
+        window.mineRock(rockId, true)
     }
 
-    currentRockRespawnTimer () {
-        return miningData[this._currentRock].respawnInterval
+    createInfoElement () {
+        let html = ''
+        let orePerMinute = [0, 0, 0]
+        let selectedOres = ''
+        let xp = this.calculateXp()
+        let estimatedOre = this.calculateOre()
+        // Add xp info
+        html += genericInfoContainer(
+            'assets/media/main/statistics_header.svg',
+            formatNumber(xp * 60) + ' xp/m',
+            formatNumber(xp * 60 * 60) + ' xp/h',
+            'Estimated xp gain for selected ores',
+            'col-12 col-md-6 col-xl-3',
+            window.skillName[this._skill]
+        )
+
+        // Add selected ores info
+        for (let i of [0, 1, 2]) {
+            let rockId = this.config[`ore${i}`]
+            let img = 'assets/media/skills/mining/rock_empty.svg'
+            let name = 'No Ore Selected'
+            if (rockId) {
+                if (rockId == miningRocks.runeEssence) {
+                    img = `assets/media/bank/rune_essence.svg`
+                } else {
+                    img = `assets/media/skills/mining/rock_${oreTypes[rockId]}.svg`
+                }
+                name = window.setToUppercase(oreTypes[rockId])
+                orePerMinute[i] = name
+            }
+
+            selectedOres += `
+<div class="media d-flex align-items-center push w-33">
+    <div class="mr-3">
+        ${img.length ? `<img class="shop-img" src="${img}">` : ''}
+    </div>
+    <div class="media-body">
+        <div class="font-w600">${name}</div>
+            <div class="font-size-sm">Ore ${i + 1}</div>
+    </div>
+</div>`
+        }
+
+        // Add ore info
+        html += genericInfoContainer(
+            'assets/media/main/bank_header.svg',
+            `${formatNumber(estimatedOre[0] * 60 * 60)} ${orePerMinute[0]}/h`,
+            `${formatNumber(estimatedOre[1] * 60 * 60)} ${orePerMinute[1]}/h`,
+            'Estimated ore gain',
+            'col-12 col-md-6 col-xl-3',
+            window.skillName[this._skill]
+        )
+
+        this._infoEl = $(`<div class="row">${html}${infoContainer(selectedOres, 'col-12 col-md-12 col-xl-6', window.skillName[this._skill])}</div>`)
+        $('#mining-ores-container').before(this._infoEl)
+    }
+
+    removeInfoElement () {
+        this._infoEl.remove()
+    }
+
+    /**
+     * Not used, but mildly interesting.
+     * Calculates xp/s on the current rock, at a particular(or current) mastery level
+     */
+    calculateAvgXpSingle (mastery = null) {
+        let timeToMine = (((mastery ?? window.miningOreMastery[window.currentRock].mastery) + 5) * (getMiningInterval() / 1000))
+        let wait = miningData[window.currentRock].respawnInterval / 1000
+
+        return ((timeToMine / (getMiningInterval() / 1000)) * items[miningData[window.currentRock].ore].miningXP) / (timeToMine + wait)
+    }
+
+    // Sad attempt at calculating xp with multiple ores. pretty much only works for the first 2 ores
+    calculateXp () {
+        const miningInterval = getMiningInterval() / 1000
+        let totalXp = 0
+        let timeRemaining = 0
+        let totalTime = 0
+
+        for (let i of [0, 1, 2]) {
+            let rockId = this.config[`ore${i}`]
+            let respawn = miningData[rockId].respawnInterval / 1000
+            let mastery = window.miningOreMastery[rockId].mastery
+            let time = (mastery + 5) * miningInterval
+            let xp = items[miningData[rockId].ore].miningXP
+
+            if (totalTime === 0) {
+                totalTime = time + respawn
+                totalXp += (mastery + 5) * xp
+                timeRemaining = respawn
+            } else {
+                if (time > timeRemaining) {
+                    totalXp += xp * (timeRemaining / miningInterval)
+                    // out of time
+                    break
+                } else {
+                    // mined the whole rock
+                    timeRemaining -= time
+                    totalXp += (mastery + 5) * xp
+                }
+            }
+        }
+
+        return totalXp / totalTime
+    }
+
+    calculateOre ()  {
+        let ores = []
+        const miningInterval = getMiningInterval() / 1000
+        let timeRemaining = 0
+        let totalTime = 0
+
+        for (let i of [0, 1, 2]) {
+            let rockId = this.config[`ore${i}`]
+            let respawn = miningData[rockId].respawnInterval / 1000
+            let mastery = window.miningOreMastery[rockId].mastery
+            let oreCount = (mastery + 5)
+            let time = (mastery + 5) * miningInterval
+            let xp = items[miningData[rockId].ore].miningXP
+
+            if (ores.length === 0) {
+                totalTime = time + respawn
+                ores[i] = oreCount
+                timeRemaining = respawn
+            } else {
+                if (time > timeRemaining) {
+                    ores[i] = Math.floor(timeRemaining / miningInterval)
+                    // out of time
+                    break
+                } else {
+                    // mined the whole rock
+                    timeRemaining -= time
+                    ores[i] = oreCount
+                }
+            }
+        }
+
+        let wearingSkillcap = skillcapeEquipped(this._skill)
+        let coalFromCape = wearingSkillcap ? ores.reduce((total, oreCount) => total += oreCount, 0) : 0
+
+        // need ore/s for each ore type
+        return ores.map((oreCount, index) => {
+            let rockId = this.config[`ore${index}`];
+            let mastery = window.miningOreMastery[rockId].mastery
+            // Add average additional ores from mastery doubling
+            oreCount *= 1 + Math.floor(mastery / 10) / 100
+
+            if (rockId == this.COAL) {
+                // if its coal, add the additional cape coal
+                oreCount += coalFromCape
+            }
+
+            return oreCount / totalTime
+        })
+    }
+
+    buildConfigHtml () {
+        let html = ''
+        for (let i of [0, 1, 2]) {
+            let ores = [{
+                img: 'assets/media/skills/mining/rock_empty.svg',
+                id: null,
+                text: 'None',
+            }].concat(oreTypes.map((oreType, rockId) => {
+                if (miningData[rockId].level > window.skillLevel[this._skill]) {
+                    return null
+                }
+
+                let img = `assets/media/skills/mining/rock_${oreType}.svg`
+                if (rockId === miningRocks.runeEssence) {
+                    // why
+                    img = `assets/media/bank/rune_essence.svg`
+                }
+                return {
+                    img: img,
+                    id: rockId,
+                    text: window.setToUppercase(oreType)
+                }
+            })).filter(option => option)
+            html += configItemDescription(`Ore ${i + 1}`, `Will attempt to mine whenever available`)
+            html += configItemForm(select2(ores, toolConfigInputName(this.getName(), `ore${i}`)))
+        }
+        return html
     }
 }
