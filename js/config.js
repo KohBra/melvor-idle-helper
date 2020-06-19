@@ -98,7 +98,8 @@ export default {
     updateConfigPage () {
         Object.keys(toolDefinitions).forEach(toolName => {
             let enabled = tools.getConfig(configKeys.enabledTools).indexOf(toolName) >= 0
-            $(`input[name=config-${toolName}-toggle]`).val(+enabled).change()
+            $(`input[name=config-${toolName}-toggle]`).val(+enabled)
+            $(`input[id=config-${toolName}-toggle-${enabled ? 'enable' : 'disable'}]`).attr('checked', true)
 
             Object.keys(tools.getConfig(toolName)).forEach(configName => {
                 let field = $(`[name=config-${toolName}-${configName}]`)
@@ -128,22 +129,27 @@ export default {
         $('#header-theme').attr('class', 'content-header bg-secondary')
         $('#page-header').attr('class', ' bg-secondary');
 
-        // watch page change to close the config page
-        new MutationObserver(mutations => mutations.forEach(() => {
-            $(`#${configPageId}`).addClass('d-none')
-        })).observe(page[0], {attributes: true})
+        if (page.length > 0) {
+            // watch page change to close the config page
+            let ob = new MutationObserver(mutations => mutations.forEach(() => {
+                $(`#${configPageId}`).addClass('d-none')
+                ob.disconnect()
+            })).observe(page[0], {attributes: true})
+        }
     },
 
     toggleTool (toolName, enabled) {
         if (enabled) {
-            tools.getConfig(configKeys.enabledTools).push(toolName)
+            if (tools.getConfig(configKeys.enabledTools).indexOf(toolName) < 0) {
+                tools.getConfig(configKeys.enabledTools).push(toolName)
+            }
             tools.startTool(toolName)
         } else {
-            tools.getConfig(configKeys.enabledTools).splice(
-                tools.getConfig(configKeys.enabledTools).indexOf(toolName),
-                1
-            )
-            tools.stopTool(toolName)
+            let toolIndex = tools.getConfig(configKeys.enabledTools).indexOf(toolName)
+            if (toolIndex >= 0) {
+                tools.getConfig(configKeys.enabledTools).splice(toolIndex, 1)
+                tools.stopTool(toolName)
+            }
         }
 
         tools.saveConfig()

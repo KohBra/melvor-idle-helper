@@ -74,8 +74,11 @@ window.toolset = (() => {
     }
     const restartTool = toolName => {
         let tool = getTool(toolName)
-        tool.stop()
-        tool.start()
+        tool.setConfig(getConfig(toolName))
+        if (tool.started) {
+            tool.stop()
+            tool.start()
+        }
     }
     const getTool = toolName => tools[toolName] ?? new toolDefinitions[toolName](getConfig(toolName))
 

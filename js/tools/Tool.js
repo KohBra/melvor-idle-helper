@@ -13,6 +13,10 @@ export default class Tool
         this.started = false
     }
 
+    setConfig(config) {
+        this.config = config
+    }
+
     getDescription () {
         return this.constructor.name
     }

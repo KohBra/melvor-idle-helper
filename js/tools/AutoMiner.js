@@ -22,8 +22,10 @@ export default class AutoMiner extends SkillInterval
     }
 
     stop () {
+        if (this.started) {
+            this.removeInfoElement()
+        }
         super.stop()
-        this.removeInfoElement()
     }
 
     loop () {
