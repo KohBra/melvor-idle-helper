@@ -117,7 +117,7 @@ export default class AutoFarm extends IntervalTool
             let seeds = [null].concat(window[areaKey].filter(s => s.level <= window.skillLevel[CONSTANTS.skill.Farming])
                 .map(seed => seed.itemID))
             let itemsHtml = '';
-            for (let i of [0, 1, 2, 4]) {
+            for (let i of [0, 1, 2, 3]) {
                 let css = ''
 
                 if (i === 0) {

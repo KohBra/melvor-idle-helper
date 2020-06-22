@@ -53,17 +53,20 @@ export default {
         // Some dumb shit here
         // This select2 nonsense allows selected elements to be selected in a particular order,
         // but also have the dropdown always show in the same order...
-        $('.item-select2').select2({
-            templateResult: this.itemOption,
-            templateSelection: this.itemOption,
-            sorter: o => sortOptions ? o.sort((a, b) => parseInt(a.id) - parseInt(b.id)) : o,
-        }).on("select2:select", function (evt) {
-            var element = evt.params.data.element;
-            var $element = $(element);
-            $element.detach();
-            $(this).append($element);
-            $(this).trigger("change");
-        });
+        $('.item-select2').each((i, el) => {
+            $(el).select2({
+                templateResult: this.itemOption,
+                templateSelection: this.itemOption,
+                closeOnSelect: !el.multiple,
+                sorter: o => sortOptions ? o.sort((a, b) => parseInt(a.id) - parseInt(b.id)) : o,
+            }).on("select2:select", function (evt) {
+                var element = evt.params.data.element;
+                var $element = $(element);
+                $element.detach();
+                $(this).append($element);
+                $(this).trigger("change");
+            })
+        })
 
         // Because radio buttons are incredibly dumb
         $('input[type=radio].better-radio').on('change', e => {
@@ -131,9 +134,11 @@ export default {
 
         if (page.length > 0) {
             // watch page change to close the config page
-            let ob = new MutationObserver(mutations => mutations.forEach(() => {
+            const ob = new MutationObserver(mutations => mutations.forEach(() => {
                 $(`#${configPageId}`).addClass('d-none')
-                ob.disconnect()
+                if (ob) {
+                    ob.disconnect()
+                }
             })).observe(page[0], {attributes: true})
         }
     },

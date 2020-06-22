@@ -1,4 +1,4 @@
-import { debug } from './const.js'
+import { combatSkills, debug } from './const.js'
 
 // generic
 export const debugLog = (...logs) => debug && console.log(...logs)
@@ -6,10 +6,15 @@ export const swapObj = obj => obj.reduce((newObj, key) => {
     newObj[obj[key]] = key
     return newObj
 }, {})
+export const arrayDifference = (arrA, arrB) => arrA.filter(e => !arrB.includes(e))
+export const arraySymmetricDifference = (arrA, arrB) => arrA
+    .filter(e => !arrB.includes(e))
+    .concat(arrB.filter(e => !arrA.includes(e)))
 export const formatNumber = n => window.numberWithCommas(n.toFixed(2))
 
 // bank
 export const isBankFull = () => window.bank.length === window.bankMax + 11
+export const getBankItemIndex = itemId => window.bank.findIndex(item => item.id === itemId)
 export const getBankItem = itemId => window.bank.find(item => item.id === itemId)
 export const bankHasItem = itemId => getBankItem(itemId) !== undefined
 export const sellItem = (itemId, qty) => {
@@ -43,26 +48,26 @@ export const skillcapeEquipped = skillId => {
 }
 
 
-
 // skills
-const combatSkills = [
-    CONSTANTS.skill.Attack,
-    CONSTANTS.skill.Strength,
-    CONSTANTS.skill.Defence,
-    CONSTANTS.skill.Hitpoints,
-    CONSTANTS.skill.Ranged,
-    CONSTANTS.skill.Magic,
-    CONSTANTS.skill.Prayer,
-    CONSTANTS.skill.Slayer,
-]
-
 export const doingSkill = skill => {
     if (offline.skill !== null) {
         return window.offline.skill === skill
+    } else if (skill === CONSTANTS.skill.Slayer) {
+        return doingSlayer()
     } else {
         return window.isInCombat && combatSkills.indexOf(skill) >= 0
     }
 }
+
+export const doingSlayer = () => {
+    return window.isInCombat
+    && window.slayerTask.length > 0
+    && window.slayerTask[0].monsterID === window.enemyInCombat
+}
+
+export const isFarming = () => window.newFarmingAreas.reduce((sum, area) =>
+    sum += area.patches.reduce((sum, patch) =>
+        sum += patch.seedID, 0), 0) > 0
 
 export const getMiningInterval = () => {
     let interval = baseMiningInterval

@@ -48,6 +48,7 @@
     list-style: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    flex-wrap: wrap !important;
 }
 .select2-selection__choice {
     border: 1px solid #e1e1e1 !important;
@@ -56,6 +57,7 @@
     margin: 5px !important;
     padding-right: 8px !important;
     background-color: #373e49 !important;
+    min-width: 200px;
 }
 .select2-results__option--selected {
     display: none;

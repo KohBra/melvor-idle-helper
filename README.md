@@ -4,6 +4,8 @@ A small collection of minor tools to help play Melvor Idle
 
 ### General
 * Xp/hour
+* AutoSell
+* AutoBury
 
 ### Skills
 * AutoBonfire
@@ -20,10 +22,14 @@ A small collection of minor tools to help play Melvor Idle
 * StackableLoot
 
 ### Planned
-* AutoSell
-* AutoBury
 * AutoEat/DeathProtection
 * Items/hour
+* Fletch/Smith/Craft/Herblore/Runecraft info 
+    * Time to complete
+    * Estimated total items
+    * Estimated total xp
+    * Estimated xp/h
+    * Estimated items/h
 
 ### How to install
 Download zip -> extract somewhere (or clone it with git). Open extensions page 
