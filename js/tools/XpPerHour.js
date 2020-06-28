@@ -212,4 +212,8 @@ export default class XpPerHour extends IntervalTool
     removeXpElement () {
         this._el.remove()
     }
+
+    getDescription () {
+        return 'Keeps track of experience gained and displays an expected average xp/h for currently active skills.'
+    }
 }

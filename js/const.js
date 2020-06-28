@@ -27,12 +27,12 @@ export const nonCombatSkills = window.skillLevel.map((sk, i) => i)
 export const attackStyleXpMap = {
     [CONSTANTS.attackStyle.Stab]: [CONSTANTS.skill.Attack],
     [CONSTANTS.attackStyle.Slash]: [CONSTANTS.skill.Strength],
-    [CONSTANTS.attackStyle.Block]: [CONSTANTS.skill.Defense],
+    [CONSTANTS.attackStyle.Block]: [CONSTANTS.skill.Defence],
     [CONSTANTS.attackStyle.Accurate]: [CONSTANTS.skill.Ranged],
     [CONSTANTS.attackStyle.Rapid]: [CONSTANTS.skill.Ranged],
-    [CONSTANTS.attackStyle.Longrange]: [CONSTANTS.skill.Ranged, CONSTANTS.skill.Defense],
+    [CONSTANTS.attackStyle.Longrange]: [CONSTANTS.skill.Ranged, CONSTANTS.skill.Defence],
     [CONSTANTS.attackStyle.Magic]: [CONSTANTS.skill.Magic],
-    [CONSTANTS.attackStyle.Defensive]: [CONSTANTS.skill.Magic, CONSTANTS.skill.Defense],
+    [CONSTANTS.attackStyle.Defensive]: [CONSTANTS.skill.Magic, CONSTANTS.skill.Defence],
 }
 
 export const miningRocks = {

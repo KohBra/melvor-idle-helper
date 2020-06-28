@@ -12,4 +12,8 @@ export default class AutoLooter extends IntervalTool
             })
         }
     }
+
+    getDescription () {
+        return 'Automatically collects loot without needing the autoloot necklace equipped.'
+    }
 }

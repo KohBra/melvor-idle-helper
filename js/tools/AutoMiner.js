@@ -242,4 +242,8 @@ export default class AutoMiner extends SkillInterval
         }
         return html
     }
+
+    getDescription () {
+        return 'Automatically mines the configured ores, and switches between them when the others are on cooldown.'
+    }
 }

@@ -29,4 +29,8 @@ export default class LootInfo extends IntervalTool
     deleteInfoElement () {
         this.#infoEl.remove()
     }
+
+    getDescription () {
+        return 'Adds a basic indicator in the sidebar for how much loot is not yet collected. Find near the "Combat" sidebar header.'
+    }
 }

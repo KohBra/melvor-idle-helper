@@ -114,6 +114,9 @@ export const selectField = (options, name) => `
 </select>
 `
 
+export const numberField = (name, defaultValue, min = 1, max = 100) =>
+    `<input class="form-control" name="${name}" type="number" ${defaultValue ? `value="${defaultValue}"` : ''} min="${min}" max="${max}">`
+
 // Info builders
 export const genericInfoContainer = (imgSrc, title, text, subtext, classList, skill) => `${infoContainer(`
 <div class="media d-flex align-items-center push">

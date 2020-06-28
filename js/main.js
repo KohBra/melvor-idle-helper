@@ -109,5 +109,7 @@ let loadedInterval = setInterval(() => {
         clearInterval(loadedInterval)
         toolset.run()
         configurationPage.build(toolset)
+        // Get the fuck outta here with the ad container.
+        $('#main-container>div:first-child').remove();
     }
 }, 50)

@@ -8,7 +8,6 @@ let built = false
 let sortOptions = true
 
 export default {
-
     itemOption (option) {
         let img = '<span class="m-1"></span>'
         if ($(option.element).data('img')) {
@@ -122,7 +121,7 @@ export default {
     },
 
     loadConfigPage () {
-        $('[data-toggle="tooltip"]').tooltip('hide')
+        // $('[data-toggle="tooltip"]').tooltip('hide')
         // Hide Current container
         let page = $('#main-container>div.content:not(.d-none)')
         page.addClass('d-none')
@@ -134,12 +133,12 @@ export default {
 
         if (page.length > 0) {
             // watch page change to close the config page
-            const ob = new MutationObserver(mutations => mutations.forEach(() => {
-                $(`#${configPageId}`).addClass('d-none')
-                if (ob) {
-                    ob.disconnect()
-                }
-            })).observe(page[0], {attributes: true})
+            const ob = new MutationObserver(function (mutations) {
+                mutations.forEach(() => {
+                    $(`#${configPageId}`).addClass('d-none')
+                    this.disconnect()
+                })
+            }).observe(page[0], {attributes: true})
         }
     },
 

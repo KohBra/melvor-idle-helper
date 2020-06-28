@@ -8,8 +8,10 @@ export default class AutoSlayerTask extends SkillInterval
     loop () {
         if (this.currentEnemy() !== this.currentSlayerTask() && this.#confirmInterval === null) {
             window.jumpToEnemy(this.currentSlayerTask())
+            let count = 0
             this.#confirmInterval = setInterval(() => {
-                if (this.currentEnemy() === this.currentSlayerTask()) {
+                count++
+                if (this.currentEnemy() === this.currentSlayerTask() || count > 5) {
                     clearInterval(this.#confirmInterval)
                     this.#confirmInterval = null
                 }
@@ -25,5 +27,9 @@ export default class AutoSlayerTask extends SkillInterval
         return window.slayerTask.length > 0
             ? window.slayerTask[0].monsterID
             : null
+    }
+
+    getDescription () {
+        return 'Automatically switches to new slayer tasks when finishing the current slayer task.'
     }
 }

@@ -19,4 +19,8 @@ export default class StackableLoot extends IntervalTool
             window.loadLoot()
         }
     }
+
+    getDescription () {
+        return 'Dropped loot will stack up when available, rather than only bones stacking.'
+    }
 }

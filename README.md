@@ -1,11 +1,13 @@
 # Melvor Idle Tools Chrome Extension
 
-A small collection of minor tools to help play Melvor Idle
+A small collection of minor tools to help play Melvor Idle. Built for Melvor Idle v0.15.4 
 
 ### General
 * Xp/hour
+* Items/hour
 * AutoSell
 * AutoBury
+* Skillcape Equipper
 
 ### Skills
 * AutoBonfire
@@ -18,13 +20,14 @@ A small collection of minor tools to help play Melvor Idle
 ### Loot
 * AutoLooter
 * LootInfo
-* SellableLoot
 * StackableLoot
 
-### Planned
+### Todo
 * AutoEat/DeathProtection
-* Items/hour
-* Fletch/Smith/Craft/Herblore/Runecraft info 
+* slayer auto equip items (shield, ring, etc)
+* Stats (Autosell)
+* XpPerHour slayer xp tracking
+* Fletch/Smith/Craft/Herblore/Runecraft/Firemaking/Cooking info 
     * Time to complete
     * Estimated total items
     * Estimated total xp

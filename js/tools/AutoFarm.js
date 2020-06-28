@@ -1,6 +1,14 @@
 import IntervalTool from './IntervalTool.js'
 import { farmingAreas, farmingAreaSeedKeys, farmingSeedRequirements } from '../const.js'
-import { debugLog, getBankItem } from '../helpers.js'
+import {
+    bankHasItem,
+    debugLog, equipItemFromBank,
+    equipSkillCape,
+    getBankItem,
+    getCurrentEquipment,
+    hasSkillcapeEquipped,
+    hasSkillcapeFor
+} from '../helpers.js'
 import {
     configItemDescription,
     configItemForm,
@@ -11,8 +19,10 @@ import {
 
 export default class AutoFarm extends IntervalTool
 {
+    RAKE_ID = 811
     _skill = CONSTANTS.skill.Farming
     _interval = 30000 // 30 seconds
+    _previousEquipment = null
 
     loop () {
         this.harvest()
@@ -20,6 +30,7 @@ export default class AutoFarm extends IntervalTool
     }
 
     harvest () {
+        this.equip()
         window.newFarmingAreas.forEach(area => {
             window.loadFarmingArea(area.id)
             $('div[id^=farming-patch-] button.btn-success.mr-1:not(.m-2)').each((i, el) => {
@@ -30,6 +41,7 @@ export default class AutoFarm extends IntervalTool
                 $(el).click()
             })
         })
+        this.unequip()
     }
 
     plant () {
@@ -153,5 +165,31 @@ export default class AutoFarm extends IntervalTool
         )
 
         return config
+    }
+
+    equip () {
+        this._previousEquipment = window.equippedItems.slice()
+        if (hasSkillcapeFor(this._skill)) {
+            if (!hasSkillcapeEquipped(this._skill)) {
+                equipSkillCape(this._skill)
+            }
+        }
+        if (bankHasItem(this.RAKE_ID)) {
+            equipItemFromBank(this.RAKE_ID)
+        }
+    }
+
+    unequip () {
+        this._previousEquipment.forEach((itemId, slot) => {
+            if (itemId === 0) {
+                window.unequipItem(slot)
+            } else if (getCurrentEquipment(slot) !== itemId) {
+                equipItemFromBank(itemId)
+            }
+        })
+    }
+
+    getDescription () {
+        return 'Automatically plants, and harvests farming areas. Plants configured seeds, and also uses configured amount of compost/gloop.'
     }
 }

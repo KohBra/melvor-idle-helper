@@ -1,4 +1,4 @@
-import { combatSkills, debug } from './const.js'
+import { attackStyleXpMap, combatSkills, debug } from './const.js'
 
 // generic
 export const debugLog = (...logs) => debug && console.log(...logs)
@@ -10,7 +10,7 @@ export const arrayDifference = (arrA, arrB) => arrA.filter(e => !arrB.includes(e
 export const arraySymmetricDifference = (arrA, arrB) => arrA
     .filter(e => !arrB.includes(e))
     .concat(arrB.filter(e => !arrA.includes(e)))
-export const formatNumber = n => window.numberWithCommas(n.toFixed(2))
+export const formatNumber = (n, c = 2) => window.numberWithCommas(n.toFixed(c))
 
 // bank
 export const isBankFull = () => window.bank.length === window.bankMax + 11
@@ -46,17 +46,44 @@ export const skillcapeEquipped = skillId => {
     return window.equippedItems[CONSTANTS.equipmentSlot.Cape] === skillcapeItemId
         || window.equippedItems[CONSTANTS.equipmentSlot.Cape] === CONSTANTS.item.Max_Skillcape
 }
+export const showNotification = (img, message, type = 'success') => Toastify({
+    text: `
+<img class="notification-img" src="${img}">
+<span class="badge badge-${type}">
+    ${message}
+</span>`,
+    duration: 2000,
+    gravity: "bottom",
+    position: 'center',
+    backgroundColor: "transparent",
+    stopOnFocus: false,
+}).showToast();
 
 
 // skills
 export const doingSkill = skill => {
-    if (offline.skill !== null) {
+    if (window.offline.skill !== null) {
         return window.offline.skill === skill
-    } else if (skill === CONSTANTS.skill.Slayer) {
-        return doingSlayer()
     } else {
         return window.isInCombat && combatSkills.indexOf(skill) >= 0
     }
+}
+
+export const currentSkill = () => {
+    let skill = window.offline.skill
+    if (skill !== null) {
+        return skill
+    }
+
+    if (window.isInCombat) {
+        if (doingSlayer()) {
+            return CONSTANTS.skill.Slayer
+        } else {
+            return attackStyleXpMap[window.attackStyle][0]
+        }
+    }
+
+    return null
 }
 
 export const doingSlayer = () => {
@@ -67,7 +94,8 @@ export const doingSlayer = () => {
 
 export const isFarming = () => window.newFarmingAreas.reduce((sum, area) =>
     sum += area.patches.reduce((sum, patch) =>
-        sum += patch.seedID, 0), 0) > 0
+        sum += patch.seedID, 0), 0
+) > 0
 
 export const getMiningInterval = () => {
     let interval = baseMiningInterval
@@ -75,4 +103,56 @@ export const getMiningInterval = () => {
         interval *= 0.8
     }
     return interval *= 1 - pickaxeBonusSpeed[window.currentPickaxe] / 100
+}
+
+// items
+export const getCurrentEquipment = slot => window.equippedItems[slot]
+export const skillcapeItemId = skill => skillcapeItems[skill]
+export const getSetIdWithEquippedItem = (itemId, slot = null) => {
+    for (let setId of [0, 1, 2]) {
+        if (hasItemEquipped(itemId, slot, setId)) {
+            return setId
+        }
+    }
+
+    return null
+}
+export const hasItemEquipped = (itemId, slot = null, setId = null) => {
+    if (setId === null) {
+        setId = currentEquipmentSet()
+    }
+
+    if (slot === null) {window.equipmentSets[window.selectedEquipmentSet]
+        return window.equipmentSets[setId].equipment.indexOf(itemId) >= 0
+    } else {
+        return window.equipmentSets[setId].equipment[slot] === itemId
+    }
+}
+export const currentEquipmentSet = () => {
+    return window.selectedEquipmentSet
+}
+export const equipItemFromBank = (itemId, equipmentSet = -1) => {
+    window.equipItem(getBankItemIndex(itemId), itemId, 1, equipmentSet)
+}
+export const unequipItem = (slot, equipmentSet = currentEquipmentSet()) => {
+    let currentSet = currentEquipmentSet()
+    window.setEquipmentSet(equipmentSet)
+    window.unequipItem(CONSTANTS.equipmentSlot.Cape)
+    window.setEquipmentSet(currentSet)
+}
+
+// skillcape management
+export const hasSkillcapeInBank = skill => getBankItem(skillcapeItemId(skill)) !== undefined
+export const hasSkillcapeFor = skill => hasSkillcapeInBank(skill)
+    || getSetIdWithEquippedItem(skillcapeItemId(skill), CONSTANTS.equipmentSlot.Cape) !== null
+export const hasSkillcapeEquipped = skill => hasItemEquipped(skillcapeItemId(skill), CONSTANTS.equipmentSlot.Cape)
+export const equipSkillCape = skill => {
+    let itemId = skillcapeItemId(skill)
+    if (hasSkillcapeInBank(skill)) {
+        equipItemFromBank(itemId)
+    } else {
+        // Maybe make a config option to swap equipment sets rather than equip to current.
+        unequipItem(CONSTANTS.equipmentSlot.Cape, getSetIdWithEquippedItem(itemId))
+        equipItemFromBank(itemId)
+    }
 }

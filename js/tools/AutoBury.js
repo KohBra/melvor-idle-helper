@@ -29,4 +29,8 @@ export default class AutoBury extends IntervalTool
                     toolConfigInputName(this.getName(),  'items'), true)
             )
     }
+
+    getDescription () {
+        return 'Automatically buries bones found in your bank. Only buries selected bones.'
+    }
 }

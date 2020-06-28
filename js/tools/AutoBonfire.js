@@ -9,4 +9,8 @@ export default class AutoBonfire extends SkillInterval
             window.lightBonfire()
         }
     }
+
+    getDescription () {
+        return "Automatically lights the bonfire while Firemaking."
+    }
 }
