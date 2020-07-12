@@ -11,6 +11,6 @@ export default class AutoBonfire extends SkillInterval
     }
 
     getDescription () {
-        return "Automatically lights the bonfire while Firemaking."
+        return 'Automatically lights the bonfire while Firemaking.'
     }
 }

@@ -10,6 +10,7 @@ export default class XpPerHour extends IntervalTool
     _currentTime = null
     _el = null
     _defaultSkillIcon = 'assets/media/main/statistics_header.svg'
+    _slayerCheckTimeout = null
 
     start () {
         this.addXpElement()
@@ -37,8 +38,20 @@ export default class XpPerHour extends IntervalTool
                 CONSTANTS.skill.Prayer
             ]
 
-            if (doingSlayer()) {
-                skills.push(CONSTANTS.skill.Slayer)
+            let isDoingSlayer = doingSlayer()
+            if (isDoingSlayer || this._slayerCheckTimeout !== null) {
+                if (isDoingSlayer) {
+                    skills.push(CONSTANTS.skill.Slayer)
+                    if (this._slayerCheckTimeout !== null) {
+                        clearInterval(this._slayerCheckTimeout)
+                    }
+
+                    this._slayerCheckTimeout = setTimeout(() => {
+                        this._slayerCheckTimeout = null
+                    }, 5000)
+                } else {
+                    skills.push(CONSTANTS.skill.Slayer)
+                }
             }
 
             skills.unshift(attackStyleXpMap[window.attackStyle][0])

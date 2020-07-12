@@ -1,10 +1,8 @@
 import IntervalTool from './IntervalTool.js'
 import { formatNumber } from '../helpers.js'
-import { configItemDescription, configItemForm, numberField, toolConfigInputName } from '../htmlBuilder.js'
 
 export default class ItemsPerHour extends IntervalTool
 {
-    CONFIG_HISTORY_DURATION = 'historyDuration'
     _previousBankMap = null
     _currentTime = null
     _changes = []
@@ -41,28 +39,42 @@ export default class ItemsPerHour extends IntervalTool
         this._changes = this._changes.concat(difference.map(itemId => {
             return {
                 itemId: itemId,
-                time: new Date(),
+                time: Date.now(),
                 qtyDelta: (bankMap[itemId] ?? 0) - (this._previousBankMap[itemId] ?? 0)
             }
         }))
 
-        let time = (this._currentTime - this._changes[0].time) / 1000
+        // let time = (this._currentTime - this._changes[0].time) / 1000
         let average = this._changes.reduce((groups, change) => {
             if (groups[change.itemId] === undefined) {
-                groups[change.itemId] = 0
+                groups[change.itemId] = {
+                    qtyDelta: 0,
+                    earliest: change.time,
+                    oldest: change.time,
+                }
             }
-            groups[change.itemId] += change.qtyDelta
+            groups[change.itemId].qtyDelta += change.qtyDelta
+            groups[change.itemId].earliest = groups[change.itemId].earliest > change.time
+                ? groups[change.itemId].earliest
+                : change.time
+            groups[change.itemId].oldest = groups[change.itemId].oldest < change.time
+                ? groups[change.itemId].oldest
+                : change.time
+
             return groups
         }, {})
 
         average = Object.keys(average).map(itemId => {
-            let avg = (average[itemId] / time) * 60 * 60
+            let timeElapsed = (average[itemId].earliest - average[itemId].oldest) / 1000
+            let avg = (average[itemId].qtyDelta / timeElapsed) * 60 * 60
             return {
                 itemId: itemId,
                 avg: isFinite(avg) ? avg : 0,
-                qtyDelta: average[itemId],
+                qtyDelta: average[itemId].qtyDelta,
                 name: items[itemId].name,
                 img: items[itemId].media,
+                timeElapsed: timeElapsed,
+                timeSince: (Date.now() - average[itemId].oldest) / 1000,
             }
         })
         average = average.sort((a, b) => Math.abs(b.avg) - Math.abs(a.avg))
@@ -87,12 +99,8 @@ export default class ItemsPerHour extends IntervalTool
         }, {})
 
         this._changes = this._changes.filter(change => {
-            if (new Date() - change.time > 3600000) {
-                return false
-            }
-
             let mostRecentChange = items[change.itemId]
-            return new Date - mostRecentChange <= (this.config[this.CONFIG_HISTORY_DURATION] ?? 5) * 60 * 1000;
+            return Date.now() - mostRecentChange <= (this.config[this.CONFIG_HISTORY_DURATION] ?? 5) * 60 * 1000
         })
     }
 
@@ -131,7 +139,10 @@ export default class ItemsPerHour extends IntervalTool
 <div class="d-flex p-2">
     <div><img class="skill-icon-sm" src="${average.img}"></div>
     <div class="d-flex flex-column pl-3 text-white flex-grow-1">
-        <div class="small text-white-50 d-flex justify-content-between"><span>${average.name}</span><span>${average.qtyDelta} in the last ${this.config[this.CONFIG_HISTORY_DURATION]}m</span></div>
+        <div class="small text-white-50 d-flex justify-content-between">
+            <span>${average.name}</span>
+            <span>${formatNumber(average.qtyDelta)} in the last ${formatNumber(average.timeSince / 60)}m</span>
+        </div>
         <div>${formatNumber(average.avg)} items/h</div>
     </div>
 </div>`
@@ -176,9 +187,8 @@ export default class ItemsPerHour extends IntervalTool
         this._el.remove()
     }
 
-    buildConfigHtml () {
-        return configItemDescription(`Item change history duration (m)`, `How long in minutes to keep bank changes. Defaults to 5 minutes. I.E. If you get an item, and don't get another within 5 minutes, it won't be tracked in the items per hour. Set to 600 if you want to keep track of all items for 10 hours.`)
-            + configItemForm(numberField(toolConfigInputName(this.getName(), this.CONFIG_HISTORY_DURATION), this.config[this.CONFIG_HISTORY_DURATION], 1, 1440))
+    configComponent () {
+        return 'items-per-hour-config'
     }
 
     getDescription () {

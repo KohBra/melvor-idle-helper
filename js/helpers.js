@@ -10,7 +10,7 @@ export const arrayDifference = (arrA, arrB) => arrA.filter(e => !arrB.includes(e
 export const arraySymmetricDifference = (arrA, arrB) => arrA
     .filter(e => !arrB.includes(e))
     .concat(arrB.filter(e => !arrA.includes(e)))
-export const formatNumber = (n, c = 2) => window.numberWithCommas(n.toFixed(c))
+export const formatNumber = (n, c = 2) => window.numberWithCommas(parseFloat(n).toFixed(c))
 
 // bank
 export const isBankFull = () => window.bank.length === window.bankMax + 11
@@ -53,11 +53,11 @@ export const showNotification = (img, message, type = 'success') => Toastify({
     ${message}
 </span>`,
     duration: 2000,
-    gravity: "bottom",
+    gravity: 'bottom',
     position: 'center',
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     stopOnFocus: false,
-}).showToast();
+}).showToast()
 
 
 // skills
@@ -68,7 +68,6 @@ export const doingSkill = skill => {
         return window.isInCombat && combatSkills.indexOf(skill) >= 0
     }
 }
-
 export const currentSkill = () => {
     let skill = window.offline.skill
     if (skill !== null) {
@@ -85,24 +84,37 @@ export const currentSkill = () => {
 
     return null
 }
-
 export const doingSlayer = () => {
     return window.isInCombat
-    && window.slayerTask.length > 0
-    && window.slayerTask[0].monsterID === window.enemyInCombat
+        && window.slayerTask.length > 0
+        && window.slayerTask[0].monsterID === window.enemyInCombat
 }
-
 export const isFarming = () => window.newFarmingAreas.reduce((sum, area) =>
     sum += area.patches.reduce((sum, patch) =>
         sum += patch.seedID, 0), 0
 ) > 0
-
 export const getMiningInterval = () => {
     let interval = baseMiningInterval
     if (window.godUpgrade[2]) {
         interval *= 0.8
     }
     return interval *= 1 - pickaxeBonusSpeed[window.currentPickaxe] / 100
+}
+
+// combat
+export const requiredItemForEnemy = monsterId => {
+    if (MONSTERS[monsterId].slayerXP !== undefined) {
+        let areaId = getSlayerAreaForMonster(monsterId)
+        if (areaId !== null && slayerAreas[areaId].slayerItem > 0) {
+            return slayerAreas[areaId].slayerItem
+        }
+    }
+
+    return null
+}
+
+export const getSlayerAreaForMonster = monsterId => {
+    return slayerAreas.findIndex(area => area.monsters.includes(monsterId)) ?? null
 }
 
 // items
@@ -122,11 +134,16 @@ export const hasItemEquipped = (itemId, slot = null, setId = null) => {
         setId = currentEquipmentSet()
     }
 
-    if (slot === null) {window.equipmentSets[window.selectedEquipmentSet]
+    if (slot === null) {
+        window.equipmentSets[window.selectedEquipmentSet]
         return window.equipmentSets[setId].equipment.indexOf(itemId) >= 0
     } else {
         return window.equipmentSets[setId].equipment[slot] === itemId
     }
+}
+export const hasItemEquippedInAnySet = (itemId, slot = null) => {
+    let setId = getSetIdWithEquippedItem(itemId, slot)
+    return setId !== null
 }
 export const currentEquipmentSet = () => {
     return window.selectedEquipmentSet
@@ -137,9 +154,17 @@ export const equipItemFromBank = (itemId, equipmentSet = -1) => {
 export const unequipItem = (slot, equipmentSet = currentEquipmentSet()) => {
     let currentSet = currentEquipmentSet()
     window.setEquipmentSet(equipmentSet)
-    window.unequipItem(CONSTANTS.equipmentSlot.Cape)
+    window.unequipItem(slot)
     window.setEquipmentSet(currentSet)
 }
+export const moveItemToCurrentSet = itemId => {
+    let setId = getSetIdWithEquippedItem(itemId, items[itemId].equipmentSlot)
+    if (setId !== null) {
+        unequipItem(items[itemId].equipmentSlot, setId)
+        equipItemFromBank(itemId)
+    }
+}
+export const hasAorpheatEquipped = () => hasItemEquipped(CONSTANTS.item.Aorpheats_Signet_Ring)
 
 // skillcape management
 export const hasSkillcapeInBank = skill => getBankItem(skillcapeItemId(skill)) !== undefined

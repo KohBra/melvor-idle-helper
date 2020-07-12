@@ -1,10 +1,5 @@
 import SkillInterval from './SkillInterval.js'
-import {
-    configItemDescription,
-    configItemForm, select2, genericInfoContainer,
-    infoContainer,
-    toolConfigInputName
-} from '../htmlBuilder.js'
+import { genericInfoContainer, infoContainer, } from '../htmlBuilder.js'
 import { formatNumber, getMiningInterval, skillcapeEquipped } from '../helpers.js'
 import { miningRocks } from '../const.js'
 
@@ -33,8 +28,8 @@ export default class AutoMiner extends SkillInterval
             this._currentRock = window.currentRock
         }
 
-        for (let i of [0, 1, 2]) {
-            let rockId = parseInt(this.config[`ore${i}`])
+        for (let i of [1, 2, 3]) {
+            let rockId = parseInt(this.config.ores[i])
             if (rockId < 0 || this.isRockDepleted(rockId)) {
                 continue
             }
@@ -47,6 +42,8 @@ export default class AutoMiner extends SkillInterval
             this.startMining(rockId)
             break
         }
+
+        this.updateUi()
     }
 
     isRockDepleted (rockId) {
@@ -58,7 +55,7 @@ export default class AutoMiner extends SkillInterval
         window.mineRock(rockId, true)
     }
 
-    createInfoElement () {
+    updateUi () {
         let html = ''
         let orePerMinute = [0, 0, 0]
         let selectedOres = ''
@@ -75,8 +72,8 @@ export default class AutoMiner extends SkillInterval
         )
 
         // Add selected ores info
-        for (let i of [0, 1, 2]) {
-            let rockId = this.config[`ore${i}`]
+        for (let i of [1, 2, 3]) {
+            let rockId = parseInt(this.config.ores[i])
             let img = 'assets/media/skills/mining/rock_empty.svg'
             let name = 'No Ore Selected'
             if (rockId) {
@@ -111,7 +108,11 @@ export default class AutoMiner extends SkillInterval
             window.skillName[this._skill]
         )
 
-        this._infoEl = $(`<div class="row">${html}${infoContainer(selectedOres, 'col-12 col-md-12 col-xl-6', window.skillName[this._skill])}</div>`)
+        this._infoEl.html(`${html}${infoContainer(selectedOres, 'col-12 col-md-12 col-xl-6', window.skillName[this._skill])}`)
+    }
+
+    createInfoElement () {
+        this._infoEl = $(`<div class="row"></div>`)
         $('#mining-ores-container').before(this._infoEl)
     }
 
@@ -137,8 +138,8 @@ export default class AutoMiner extends SkillInterval
         let timeRemaining = 0
         let totalTime = 0
 
-        for (let i of [0, 1, 2]) {
-            let rockId = this.config[`ore${i}`]
+        for (let i of [1, 2, 3]) {
+            let rockId = parseInt(this.config.ores[i])
             let respawn = miningData[rockId].respawnInterval / 1000
             let mastery = window.miningOreMastery[rockId].mastery
             let time = (mastery + 5) * miningInterval
@@ -164,14 +165,14 @@ export default class AutoMiner extends SkillInterval
         return totalXp / totalTime
     }
 
-    calculateOre ()  {
+    calculateOre () {
         let ores = []
         const miningInterval = getMiningInterval() / 1000
         let timeRemaining = 0
         let totalTime = 0
 
-        for (let i of [0, 1, 2]) {
-            let rockId = this.config[`ore${i}`]
+        for (let i of [1, 2, 3]) {
+            let rockId = parseInt(this.config.ores[i])
             let respawn = miningData[rockId].respawnInterval / 1000
             let mastery = window.miningOreMastery[rockId].mastery
             let oreCount = (mastery + 5)
@@ -200,7 +201,7 @@ export default class AutoMiner extends SkillInterval
 
         // need ore/s for each ore type
         return ores.map((oreCount, index) => {
-            let rockId = this.config[`ore${index}`];
+            let rockId = parseInt(this.config.ores[index])
             let mastery = window.miningOreMastery[rockId].mastery
             // Add average additional ores from mastery doubling
             oreCount *= 1 + Math.floor(mastery / 10) / 100
@@ -214,33 +215,8 @@ export default class AutoMiner extends SkillInterval
         })
     }
 
-    buildConfigHtml () {
-        let html = ''
-        for (let i of [0, 1, 2]) {
-            let ores = [{
-                img: 'assets/media/skills/mining/rock_empty.svg',
-                id: null,
-                text: 'None',
-            }].concat(oreTypes.map((oreType, rockId) => {
-                if (miningData[rockId].level > window.skillLevel[this._skill]) {
-                    return null
-                }
-
-                let img = `assets/media/skills/mining/rock_${oreType}.svg`
-                if (rockId === miningRocks.runeEssence) {
-                    // why
-                    img = `assets/media/bank/rune_essence.svg`
-                }
-                return {
-                    img: img,
-                    id: rockId,
-                    text: window.setToUppercase(oreType)
-                }
-            })).filter(option => option)
-            html += configItemDescription(`Ore ${i + 1}`, `Will attempt to mine whenever available`)
-            html += configItemForm(select2(ores, toolConfigInputName(this.getName(), `ore${i}`)))
-        }
-        return html
+    configComponent () {
+        return 'auto-miner-config'
     }
 
     getDescription () {

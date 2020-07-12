@@ -22,17 +22,21 @@ A small collection of minor tools to help play Melvor Idle. Built for Melvor Idl
 * LootInfo
 * StackableLoot
 
+### Helpful Xp/Item stats for the following skills:
+* Cooking 
+* Crafting 
+* Firemaking 
+* Fletching 
+* Herblore 
+* Mining 
+* Runecrafting 
+* Smithing
+
+### Notes
+* Skill Stat information doesn't take into account gloves, or god upgrades (yet)  
+
 ### Todo
 * AutoEat/DeathProtection
-* slayer auto equip items (shield, ring, etc)
-* Stats (Autosell)
-* XpPerHour slayer xp tracking
-* Fletch/Smith/Craft/Herblore/Runecraft/Firemaking/Cooking info 
-    * Time to complete
-    * Estimated total items
-    * Estimated total xp
-    * Estimated xp/h
-    * Estimated items/h
 
 ### How to install
 Download zip -> extract somewhere (or clone it with git). Open extensions page 

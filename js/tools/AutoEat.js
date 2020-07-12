@@ -5,6 +5,7 @@ export default class AutoEat extends IntervalTool
 {
     _foodEfficiency = 90
     _interval = 50
+
     loop () {
         if (!this.inCombat()) {
             // Heal up while out of combat
@@ -15,7 +16,7 @@ export default class AutoEat extends IntervalTool
         }
 
         if (this.canGetInstaKilled()) {
-            this.run("Stopping combat, could be killed in one shot.")
+            this.run('Stopping combat, could be killed in one shot.')
         }
 
         if (this.currentHp() < this.maxHp()) {
@@ -23,7 +24,7 @@ export default class AutoEat extends IntervalTool
                 let currentHp = this.currentHp()
                 this.eat()
                 if (this.currentHp() === currentHp) {
-                    this.run("Stopping combat, out of food.")
+                    this.run('Stopping combat, out of food.')
                 }
             }
         }

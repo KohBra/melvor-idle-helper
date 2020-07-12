@@ -15,16 +15,16 @@ export default class Tool
         this.started = false
     }
 
-    setConfig(config) {
+    setConfig (config) {
         this.config = config
+    }
+
+    configComponent () {
+        return null
     }
 
     getDescription () {
         return this.constructor.name
-    }
-
-    buildConfigHtml () {
-        return ''
     }
 
     getName () {
@@ -67,7 +67,7 @@ export default class Tool
     }
 
     addStatValue (statKey, additional) {
-        if (typeof this.getStat(statKey) !== "number") {
+        if (typeof this.getStat(statKey) !== 'number') {
             this.setStat(statKey, additional)
         } else {
             this.setStat(statKey, this.getStat(statKey) + additional)
@@ -75,7 +75,7 @@ export default class Tool
     }
 
     incrementStatValue (statKey) {
-        if (typeof this.getStat(statKey) !== "number") {
+        if (typeof this.getStat(statKey) !== 'number') {
             this.setStat(statKey, 1)
         } else {
             this.setStat(statKey, this.getStat(statKey) + 1)

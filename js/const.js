@@ -10,6 +10,7 @@ export const configKeys = {
     enabledTools: 'enabledTools',
 }
 export const configPageId = 'tool-config-container'
+export const icon = 'assets/media/main/settings_header.svg'
 
 // Skills
 export const combatSkills = [
@@ -59,8 +60,8 @@ export const farmingSeedRequirements = {
     [farmingAreas.herb]: 2,
     [farmingAreas.tree]: 1,
 }
-export const farmingAreaSeedKeys = {
-    [farmingAreas.allotment]: 'allotmentSeeds',
-    [farmingAreas.herb]: 'herbSeeds',
-    [farmingAreas.tree]: 'treeSeeds',
+export const farmingAreaKeys = {
+    [farmingAreas.allotment]: 'allotment',
+    [farmingAreas.herb]: 'herb',
+    [farmingAreas.tree]: 'tree',
 }

@@ -1,21 +1,14 @@
 import IntervalTool from './IntervalTool.js'
-import { farmingAreas, farmingAreaSeedKeys, farmingSeedRequirements } from '../const.js'
+import { farmingAreaKeys, farmingSeedRequirements } from '../const.js'
 import {
     bankHasItem,
-    debugLog, equipItemFromBank,
+    equipItemFromBank,
     equipSkillCape,
     getBankItem,
     getCurrentEquipment,
     hasSkillcapeEquipped,
     hasSkillcapeFor
 } from '../helpers.js'
-import {
-    configItemDescription,
-    configItemForm,
-    itemSelect,
-    selectField,
-    toolConfigInputName
-} from '../htmlBuilder.js'
 
 export default class AutoFarm extends IntervalTool
 {
@@ -30,6 +23,7 @@ export default class AutoFarm extends IntervalTool
     }
 
     harvest () {
+        window.farmstart = (window.farmstart ?? 0) + 1
         this.equip()
         window.newFarmingAreas.forEach(area => {
             window.loadFarmingArea(area.id)
@@ -84,13 +78,8 @@ export default class AutoFarm extends IntervalTool
     }
 
     getAvailableSeed (areaId) {
-        let areaKey = farmingAreaSeedKeys[areaId]
-        let seeds = [
-            this.config[`${areaKey}0`],
-            this.config[`${areaKey}1`],
-            this.config[`${areaKey}2`],
-            this.config[`${areaKey}3`],
-        ]
+        let areaKey = farmingAreaKeys[areaId]
+        let seeds = this.config[`${areaKey}Seeds`] ?? []
 
         for (let seedId of seeds) {
             if (!parseInt(seedId)) {
@@ -113,58 +102,8 @@ export default class AutoFarm extends IntervalTool
             return 0
         }
 
-        let areaKey = farmingAreaSeedKeys[areaId]
+        let areaKey = farmingAreaKeys[areaId]
         return parseInt(this.config[`${areaKey}Compost`])
-    }
-
-    buildConfigHtml () {
-        let areas = {
-            allotmentSeeds: 'Allotment Seeds',
-            herbSeeds: 'Herb Seeds',
-            treeSeeds: 'Tree Seeds',
-        }
-        let config = ''
-
-        Object.keys(areas).forEach(areaKey => {
-            let seeds = [null].concat(window[areaKey].filter(s => s.level <= window.skillLevel[CONSTANTS.skill.Farming])
-                .map(seed => seed.itemID))
-            let itemsHtml = '';
-            for (let i of [0, 1, 2, 3]) {
-                let css = ''
-
-                if (i === 0) {
-                    css = 'mr-4'
-                } else if (i === 4) {
-                    css = 'ml-4'
-                } else {
-                    css = 'mx-4'
-                }
-
-                itemsHtml += `<div class="w-25 ${css}">
-                ${itemSelect(seeds, toolConfigInputName(this.getName(), `${areaKey}${i}`))}
-            </div>`
-            }
-            config += configItemDescription(`${areas[areaKey]} priority`)
-                + configItemForm(`<div class="d-flex">${itemsHtml}</div>`)
-        })
-
-        let compostOptions = [
-            {id: 0, text: 0},
-            {id: 1, text: 1},
-            {id: 2, text: 2},
-            {id: 3, text: 3},
-            {id: 4, text: 4},
-            {id: 5, text: 5},
-            {id: 6, text: "Weird Gloop"},
-        ]
-        Object.keys(areas).forEach(areaKey => config
-            += configItemDescription(`Compost ${areas[areaKey]}`)
-            +  configItemForm(
-                selectField(compostOptions, toolConfigInputName(this.getName(), areaKey + 'Compost'))
-            )
-        )
-
-        return config
     }
 
     equip () {
@@ -187,6 +126,10 @@ export default class AutoFarm extends IntervalTool
                 equipItemFromBank(itemId)
             }
         })
+    }
+
+    configComponent () {
+        return 'auto-farm-config'
     }
 
     getDescription () {

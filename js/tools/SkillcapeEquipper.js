@@ -1,8 +1,5 @@
 import IntervalTool from './IntervalTool.js'
-import {
-    currentSkill, equipSkillCape,
-    hasSkillcapeEquipped, hasSkillcapeFor
-} from '../helpers.js'
+import { currentSkill, equipSkillCape, hasSkillcapeEquipped, hasSkillcapeFor } from '../helpers.js'
 
 export default class SkillcapeEquipper extends IntervalTool
 {
