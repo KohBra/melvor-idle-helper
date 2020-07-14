@@ -7,19 +7,17 @@ A small collection of minor tools to help play Melvor Idle. Built for Melvor Idl
 * Items/hour
 * AutoSell
 * AutoBury
+* AutoOpen
 * Skillcape Equipper
 
 ### Skills
 * AutoBonfire
 * AutoMiner
 * AutoFarm
-
-### Combat
 * AutoSlayerTask
 
 ### Loot
 * AutoLooter
-* LootInfo
 * StackableLoot
 
 ### Helpful Xp/Item stats for the following skills:
