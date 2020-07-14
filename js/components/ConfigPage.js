@@ -2,6 +2,7 @@ import * as toolDefinitions from '../tools/index.js'
 import { configKeys } from '../const.js'
 import ToolToggles from './ToolToggles.js'
 import AutoBuryConfig from './AutoBuryConfig.js'
+import AutoOpenConfig from './AutoOpenConfig.js'
 import AutoMinerConfig from './AutoMinerConfig.js'
 import AutoSellConfig from './AutoSellConfig.js'
 import AutoFarmConfig from './AutoFarmConfig.js'
@@ -11,6 +12,7 @@ export default {
     components: {
         ToolToggles,
         AutoBuryConfig,
+        AutoOpenConfig,
         AutoMinerConfig,
         AutoSellConfig,
         AutoFarmConfig,
