@@ -1,6 +1,6 @@
 import SkillInterval from './SkillInterval.js'
 import { genericInfoContainer, infoContainer, } from '../htmlBuilder.js'
-import { formatNumber, getMiningInterval, skillcapeEquipped } from '../helpers.js'
+import { formatNumber, getMiningInterval, hasItemEquipped, skillcapeEquipped } from '../helpers.js'
 import { miningRocks } from '../const.js'
 
 export default class AutoMiner extends SkillInterval
@@ -205,6 +205,10 @@ export default class AutoMiner extends SkillInterval
             let mastery = window.miningOreMastery[rockId].mastery
             // Add average additional ores from mastery doubling
             oreCount *= 1 + Math.floor(mastery / 10) / 100
+
+            if (hasItemEquipped(CONSTANTS.item.Mining_Gloves)) {
+                oreCount *= 2
+            }
 
             if (rockId == this.COAL) {
                 // if its coal, add the additional cape coal

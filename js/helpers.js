@@ -148,8 +148,8 @@ export const hasItemEquippedInAnySet = (itemId, slot = null) => {
 export const currentEquipmentSet = () => {
     return window.selectedEquipmentSet
 }
-export const equipItemFromBank = (itemId, equipmentSet = -1) => {
-    window.equipItem(getBankItemIndex(itemId), itemId, 1, equipmentSet)
+export const equipItemFromBank = (itemId, equipmentSet = -1, qty = 1) => {
+    window.equipItem(getBankItemIndex(itemId), itemId, qty, equipmentSet)
 }
 export const unequipItem = (slot, equipmentSet = currentEquipmentSet()) => {
     let currentSet = currentEquipmentSet()

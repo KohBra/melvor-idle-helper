@@ -65,16 +65,16 @@ export default class ItemsPerHour extends IntervalTool
         }, {})
 
         average = Object.keys(average).map(itemId => {
-            let timeElapsed = (average[itemId].earliest - average[itemId].oldest) / 1000
-            let avg = (average[itemId].qtyDelta / timeElapsed) * 60 * 60
+            let timeSince = (Date.now() - average[itemId].oldest) / 1000
+            let avg = (average[itemId].qtyDelta / timeSince) * 60 * 60
             return {
                 itemId: itemId,
                 avg: isFinite(avg) ? avg : 0,
                 qtyDelta: average[itemId].qtyDelta,
                 name: items[itemId].name,
                 img: items[itemId].media,
-                timeElapsed: timeElapsed,
-                timeSince: (Date.now() - average[itemId].oldest) / 1000,
+                timeElapsed: (average[itemId].earliest - average[itemId].oldest) / 1000,
+                timeSince: timeSince,
             }
         })
         average = average.sort((a, b) => Math.abs(b.avg) - Math.abs(a.avg))

@@ -1,5 +1,5 @@
 import InfoTool from './InfoTool.js'
-import { hasAorpheatEquipped } from '../helpers.js'
+import { hasAorpheatEquipped, hasItemEquipped } from '../helpers.js'
 
 export default class SmithingInfo extends InfoTool
 {
@@ -51,11 +51,16 @@ export default class SmithingInfo extends InfoTool
         if (hasAorpheatEquipped()) {
             chance.push(10)
         }
+
         return chance
     }
 
     getCraftXp () {
-        return this.getCurrentSmithItem().smithingXP
+        let xp = this.getCurrentSmithItem().smithingXP
+        if (hasItemEquipped(CONSTANTS.item.Smithing_Gloves)) {
+            xp += xp * 0.50
+        }
+        return xp
     }
 
     getCraftName () {

@@ -44,7 +44,9 @@ export class Toolset
     }
 
     getConfig (key = null) {
-        return key ? this._config[key] ?? {} : this._config
+        return key ?
+            this._config[key] ?? (this._config[key] = {})
+            : this._config
     }
 
     setConfig (key, value) {

@@ -16,6 +16,7 @@ export default class AutoFarm extends IntervalTool
     _skill = CONSTANTS.skill.Farming
     _interval = 30000 // 30 seconds
     _previousEquipment = null
+    _previousAmmo = null
 
     loop () {
         this.harvest()
@@ -24,7 +25,7 @@ export default class AutoFarm extends IntervalTool
 
     harvest () {
         window.farmstart = (window.farmstart ?? 0) + 1
-        this.equip()
+        let equipped = false
         window.newFarmingAreas.forEach(area => {
             window.loadFarmingArea(area.id)
             $('div[id^=farming-patch-] button.btn-success.mr-1:not(.m-2)').each((i, el) => {
@@ -32,13 +33,21 @@ export default class AutoFarm extends IntervalTool
                     return
                 }
 
+                if (!equipped) {
+                    equipped = true
+                    this.equip()
+                }
+
                 $(el).click()
             })
         })
-        this.unequip()
+        if (equipped) {
+            this.unequip()
+        }
     }
 
     plant () {
+        let planted = false
         let previousArea = window.currentFarmingArea
         window.newFarmingAreas.forEach(area => {
             window.loadFarmingArea(area.id)
@@ -66,15 +75,18 @@ export default class AutoFarm extends IntervalTool
                 window.selectedSeed = seed
                 window.selectedPatch = [area.id, patchId]
                 window.plantSeed()
+                planted = true
 
                 $(el).click()
             })
         })
 
-        window.loadFarmingArea(previousArea)
-        window.selectedSeed = null
-        // Close the modal that opened for some reason...
-        $('button[aria-label="Close"]:visible').click()
+        if (planted) {
+            window.loadFarmingArea(previousArea)
+            window.selectedSeed = null
+            // Close the modal that opened for some reason...
+            $('button[aria-label="Close"]:visible').click()
+        }
     }
 
     getAvailableSeed (areaId) {
@@ -108,6 +120,8 @@ export default class AutoFarm extends IntervalTool
 
     equip () {
         this._previousEquipment = window.equippedItems.slice()
+        this._previousAmmo = window.ammo
+
         if (hasSkillcapeFor(this._skill)) {
             if (!hasSkillcapeEquipped(this._skill)) {
                 equipSkillCape(this._skill)
@@ -120,10 +134,15 @@ export default class AutoFarm extends IntervalTool
 
     unequip () {
         this._previousEquipment.forEach((itemId, slot) => {
+            let isQuiverSlot = slot === CONSTANTS.equipmentSlot.Quiver
             if (itemId === 0) {
                 window.unequipItem(slot)
-            } else if (getCurrentEquipment(slot) !== itemId) {
-                equipItemFromBank(itemId)
+            } else if (getCurrentEquipment(slot) !== itemId || (isQuiverSlot && window.ammo < this._previousAmmo)) {
+                if (isQuiverSlot) {
+                    equipItemFromBank(itemId, -1, this._previousAmmo)
+                } else {
+                    equipItemFromBank(itemId)
+                }
             }
         })
     }

@@ -1,5 +1,5 @@
 import InfoTool from './InfoTool.js'
-import { hasAorpheatEquipped } from '../helpers.js'
+import { hasAorpheatEquipped, hasItemEquipped } from '../helpers.js'
 
 export default class CookingInfo extends InfoTool
 {
@@ -19,11 +19,15 @@ export default class CookingInfo extends InfoTool
 
     getCraftAmount () {
         // this is a bit weird with cooking because the "craft" doesn't guarantee the desired craft outcome.
-        // we will use the percentage of success as the qty here to simulate the burninig of food.
-        // %success + (mastery level * 0.6)
-        let saveChance = 70 + (this.getMastery() * 0.6)
+        // we will use the percentage of success as the qty here to simulate the burning of food.
+        // %success + (mastery level * 0.6), capped at 99
+        let saveChance = Math.min(99, 70 + (this.getMastery() * 0.6))
 
         if (this.hasSkillCapeEquipped()) {
+            saveChance = 100
+        }
+
+        if (hasItemEquipped(CONSTANTS.item.Cooking_Gloves)) {
             saveChance = 100
         }
 
