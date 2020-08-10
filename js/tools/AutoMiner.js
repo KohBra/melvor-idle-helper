@@ -101,8 +101,8 @@ export default class AutoMiner extends SkillInterval
         // Add ore info
         html += genericInfoContainer(
             'assets/media/main/bank_header.svg',
-            `${formatNumber(estimatedOre[0] * 60 * 60)} ${orePerMinute[0]}/h`,
             `${formatNumber(estimatedOre[1] * 60 * 60)} ${orePerMinute[1]}/h`,
+            `${formatNumber(estimatedOre[2] * 60 * 60)} ${orePerMinute[2]}/h`,
             'Estimated ore gain',
             'col-12 col-md-6 col-xl-3',
             window.skillName[this._skill]

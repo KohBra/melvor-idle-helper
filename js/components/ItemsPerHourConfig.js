@@ -5,7 +5,7 @@ export default {
     components: { ConfigSection, MultiSelect },
     template: `
 <config-section>
-    <template v-slot:title>Auto Sell</template>
+    <template v-slot:title>Items Per Hour</template>
     <div class="col-6 col-lg-4 col-xl-3 d-flex flex-column justify-content-center my-3">
         <div class="font-size-sm text-muted m-0">
             Item change history duration (m)

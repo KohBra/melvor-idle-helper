@@ -30,7 +30,7 @@ export default class AutoBury extends IntervalTool
                     }
                 } else {
                     console.log(`Auto bury ${bankItem.qty} ${bankItem.name}`)
-                    window.buryItem(bankId, itemId, bankItem.qty)
+                    window.buryItem(bankId, boneId, bankItem.qty)
                 }
             }
         })

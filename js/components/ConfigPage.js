@@ -6,6 +6,7 @@ import AutoOpenConfig from './AutoOpenConfig.js'
 import AutoMinerConfig from './AutoMinerConfig.js'
 import AutoSellConfig from './AutoSellConfig.js'
 import AutoFarmConfig from './AutoFarmConfig.js'
+import AutoRunecrafterConfig from './AutoRunecrafterConfig.js'
 import ItemsPerHourConfig from './ItemsPerHourConfig.js'
 
 export default {
@@ -16,7 +17,8 @@ export default {
         AutoMinerConfig,
         AutoSellConfig,
         AutoFarmConfig,
-        ItemsPerHourConfig
+        AutoRunecrafterConfig,
+        ItemsPerHourConfig,
     },
     template: `
 <div class="row row-deck">

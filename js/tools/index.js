@@ -3,6 +3,7 @@ export { default as AutoMiner } from './AutoMiner.js'
 export { default as AutoFarm } from './AutoFarm.js'
 export { default as AutoBury } from './AutoBury.js'
 export { default as AutoSlayerTask } from './AutoSlayerTask.js'
+export { default as AutoRunecrafter } from './AutoRunecrafter.js'
 // export { default as AutoEat } from './AutoEat.js'
 
 export { default as AutoLooter } from './AutoLooter.js'

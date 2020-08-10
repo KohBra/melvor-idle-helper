@@ -17,15 +17,19 @@ export default class AutoFarm extends IntervalTool
     _interval = 30000 // 30 seconds
     _previousEquipment = null
     _previousAmmo = null
+    _equipped = false
 
     loop () {
         this.harvest()
         this.plant()
+        if (this._equipped) {
+            this.unequip()
+        }
     }
 
     harvest () {
         window.farmstart = (window.farmstart ?? 0) + 1
-        let equipped = false
+        this._equipped = false
         window.newFarmingAreas.forEach(area => {
             window.loadFarmingArea(area.id)
             $('div[id^=farming-patch-] button.btn-success.mr-1:not(.m-2)').each((i, el) => {
@@ -33,17 +37,14 @@ export default class AutoFarm extends IntervalTool
                     return
                 }
 
-                if (!equipped) {
-                    equipped = true
+                if (!this._equipped) {
+                    this._equipped = true
                     this.equip()
                 }
 
                 $(el).click()
             })
         })
-        if (equipped) {
-            this.unequip()
-        }
     }
 
     plant () {
